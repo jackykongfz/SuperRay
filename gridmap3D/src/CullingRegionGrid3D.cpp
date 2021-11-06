@@ -33,6 +33,9 @@ namespace gridmap3D{
     CullingRegionGrid3D::CullingRegionGrid3D(double in_resolution)
             : OccupancyGrid3DBase<Grid3DNode>(in_resolution) {
         cullingregionGrid3DMemberInit.ensureLinking();
+        m_res = in_resolution;
+        myfile.open("/home/jackykong/motionplanning/FUEL_ws/src/Exploration_sim/octomap_mapping/octomap_server/data/superray_data.txt", std::ios_base::out);//, std::ios_base::out
+        start = std::chrono::system_clock::now();
     };
 
     /*CullingRegionGrid3D::CullingRegionGrid3D(std::string _filename)
@@ -50,6 +53,13 @@ namespace gridmap3D{
         // Build a culling region
         KeySet cullingregion = buildCullingRegion(pc, origin);
 
+            double hash_cubesize = m_res;
+            int cube_numx,cube_numy,cube_numz;
+            cube_numx = 500/hash_cubesize;
+            cube_numy = 500/hash_cubesize;
+            cube_numz = 100/hash_cubesize;
+            curexpl_voxelcount = 0;
+
         // Update the occupancies of the map
 #ifdef _OPENMP
         omp_set_num_threads(this->keyrays.size());
@@ -63,6 +73,7 @@ namespace gridmap3D{
 #endif
             KeyRay* keyray = &(this->keyrays.at(threadIdx));
 
+
             if (this->computeInverseRayKeys(p, origin, *keyray, cullingregion)){
 #ifdef _OPENMP
 #pragma omp critical
@@ -71,6 +82,21 @@ namespace gridmap3D{
                     // Update the traversed cells to have the free states
                     for (KeyRay::iterator it = keyray->begin(); it != keyray->end(); ++it){
                         updateNode(*it, false);
+                        point3d keys_pt = keyToCoord(*it);
+                        //check if hashmap has value
+                        int ind_x = (round((keys_pt(0) + EPSS)/hash_cubesize));
+                        int ind_y = (round((keys_pt(1) + EPSS)/hash_cubesize));
+                        int ind_z = (round((keys_pt(2) + EPSS)/hash_cubesize));
+
+                        long int box_index = ind_x + ind_y*cube_numx + ind_z*cube_numx*cube_numy;
+                        // point_hashmap.insert(pair<int, >(box_index, pt_in));
+                        if(point_hashmap[box_index] > 0)
+                        {
+                            continue;
+                        }else{
+                            point_hashmap[box_index] = 1;
+                            curexpl_voxelcount++;
+                        }
                     }
                 }
             }
@@ -79,7 +105,29 @@ namespace gridmap3D{
         // Update the cells containing the end points to have the occupied states
         for (int i = 0; i < (int)pc.size(); ++i){
             updateNode(pc[i], true);
+                        point3d keys_pt = pc[i];
+                        //check if hashmap has value
+                        int ind_x = (round((keys_pt(0) + EPSS)/hash_cubesize));
+                        int ind_y = (round((keys_pt(1) + EPSS)/hash_cubesize));
+                        int ind_z = (round((keys_pt(2) + EPSS)/hash_cubesize));
+
+                        long int box_index = ind_x + ind_y*cube_numx + ind_z*cube_numx*cube_numy;
+                        // point_hashmap.insert(pair<int, >(box_index, pt_in));
+                        if(point_hashmap[box_index] > 0)
+                        {
+                            continue;
+                        }else{
+                            point_hashmap[box_index] = 1;
+                            curexpl_voxelcount++;
+                        }
         }
+
+        explored_voxelcount = explored_voxelcount + curexpl_voxelcount;
+        std::cout << "Explored voxel count = " <<  explored_voxelcount << std::endl;
+        auto end2 = std::chrono::system_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end2 - start);
+        myfile << double(duration.count()) * std::chrono::microseconds::period::num / std::chrono::microseconds::period::den  << " " << curexpl_voxelcount << " " << explored_voxelcount << " " << m_res*m_res*m_res*explored_voxelcount << std::endl;
+
     }
 
     void CullingRegionGrid3D::insertSuperRayCloudRays(const Pointcloud& pc, const point3d& origin, const int threshold)

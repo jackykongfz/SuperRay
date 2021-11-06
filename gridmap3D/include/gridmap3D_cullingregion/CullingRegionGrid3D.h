@@ -33,6 +33,16 @@
 #include <gridmap3D/gridmap3D.h>
 #include <gridmap3D_superray/SuperRayGenerator.h>
 
+#include <tr1/unordered_map>
+#include <iostream>
+#include <fstream>
+#include <ctime>
+#include <chrono>
+
+using namespace std;
+// using namespace chrono;
+
+#define EPSS 1e-6
 namespace gridmap3D{
     class CullingRegionGrid3D : public OccupancyGrid3DBase<Grid3DNode> {
     public:
@@ -46,7 +56,9 @@ namespace gridmap3D{
          */
         // CullingRegionGrid3D(std::string _filename);
 
-        virtual ~CullingRegionGrid3D(){};
+        virtual ~CullingRegionGrid3D(){
+            myfile.close();
+        };
 
         /// virtual constructor: creates a new object of same type
         /// (Covariant return type requires an up-to-date compiler)
@@ -144,6 +156,15 @@ namespace gridmap3D{
         };
         /// static member to ensure static initialization (only once)
         static StaticMemberInitializer cullingregionGrid3DMemberInit;
+
+    private:
+        double m_res;
+        int explored_voxelcount = 0;
+        int curexpl_voxelcount = 0;
+        std::tr1::unordered_map<int, int> point_hashmap;
+        std::string pkg_path;
+        std::ofstream myfile;
+        std::chrono::_V2::system_clock::time_point start;
     };
 }
 
