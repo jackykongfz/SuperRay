@@ -47,7 +47,7 @@ namespace gridmap3D{
     class CullingRegionGrid3D : public OccupancyGrid3DBase<Grid3DNode> {
     public:
         /// Default constructor, sets resolution of grid
-        CullingRegionGrid3D(double resolution);
+        CullingRegionGrid3D(double resolution,double min_x,double max_x,double min_y,double max_y,double min_z,double max_z);
 
         /**
          * Reads a Grid3D from a binary file
@@ -62,7 +62,7 @@ namespace gridmap3D{
 
         /// virtual constructor: creates a new object of same type
         /// (Covariant return type requires an up-to-date compiler)
-        CullingRegionGrid3D* create() const { return new CullingRegionGrid3D(resolution); }
+        CullingRegionGrid3D* create() const { return new CullingRegionGrid3D(resolution,bbx_min,bbx_max,bby_min,bby_max,bbz_min,bbz_max); }
 
         std::string getGridType() const { return "CullingRegionGrid3D"; }
 
@@ -142,7 +142,7 @@ namespace gridmap3D{
         class StaticMemberInitializer{
         public:
             StaticMemberInitializer() {
-                CullingRegionGrid3D* grid = new CullingRegionGrid3D(0.1);
+                CullingRegionGrid3D* grid = new CullingRegionGrid3D(0.1,0,10,0,10,0,10);
                 grid->clearKeyRays();
                 AbstractGrid3D::registerGridType(grid);
             }
@@ -165,6 +165,8 @@ namespace gridmap3D{
         std::string pkg_path;
         std::ofstream myfile;
         std::chrono::_V2::system_clock::time_point start;
+
+        double bbx_min,bbx_max,bby_min,bby_max,bbz_min,bbz_max;
     };
 }
 

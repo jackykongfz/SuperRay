@@ -30,12 +30,18 @@
 #include <gridmap3D_cullingregion/CullingRegionGrid3D.h>
 
 namespace gridmap3D{
-    CullingRegionGrid3D::CullingRegionGrid3D(double in_resolution)
+    CullingRegionGrid3D::CullingRegionGrid3D(double in_resolution, double min_x,double max_x,double min_y,double max_y,double min_z,double max_z)
             : OccupancyGrid3DBase<Grid3DNode>(in_resolution) {
         cullingregionGrid3DMemberInit.ensureLinking();
         m_res = in_resolution;
         myfile.open("/home/jackykong/motionplanning/FUEL_ws/src/Exploration_sim/octomap_mapping/octomap_server/data/superray_data.txt", std::ios_base::out);//, std::ios_base::out
         start = std::chrono::system_clock::now();
+        bbx_min = min_x;
+        bbx_max = max_x;
+        bby_min = min_y;
+        bby_max = max_y;
+        bbz_min = min_z;
+        bbz_max = max_z;
     };
 
     /*CullingRegionGrid3D::CullingRegionGrid3D(std::string _filename)
@@ -53,12 +59,18 @@ namespace gridmap3D{
         // Build a culling region
         KeySet cullingregion = buildCullingRegion(pc, origin);
 
+        // std::cout<<"origin = "<<origin(0)<<", " << origin(1) <<", "<<origin(2)<<std::endl;
+        // std::cout<<"bounding box area = "<<bbx_min<<", " << bbx_max <<", "<<bby_min 
+        //            << ", " << bby_max << ", " << bbz_min << ", " << bbz_max<<std::endl;
+
             double hash_cubesize = m_res;
             int cube_numx,cube_numy,cube_numz;
             cube_numx = 500/hash_cubesize;
             cube_numy = 500/hash_cubesize;
             cube_numz = 100/hash_cubesize;
             curexpl_voxelcount = 0;
+
+            
 
         // Update the occupancies of the map
 #ifdef _OPENMP
@@ -83,6 +95,21 @@ namespace gridmap3D{
                     for (KeyRay::iterator it = keyray->begin(); it != keyray->end(); ++it){
                         updateNode(*it, false);
                         point3d keys_pt = keyToCoord(*it);
+
+                        // std::cout<<"current pt = "<<keys_pt(0)<<", " << keys_pt(1) <<", "<<keys_pt(2)<<std::endl;
+
+                        //add bounding box 
+                        if(keys_pt(0) > bbx_max || keys_pt(0) < bbx_min)
+                        {
+                            continue;
+                        }else if(keys_pt(1) > bby_max || keys_pt(1) < bby_min)
+                        {
+                            continue;
+                        }else if(keys_pt(2) > bbz_max || keys_pt(2) < bbz_min)
+                        {
+                            continue;
+                        }
+
                         //check if hashmap has value
                         int ind_x = (round((keys_pt(0) + EPSS)/hash_cubesize));
                         int ind_y = (round((keys_pt(1) + EPSS)/hash_cubesize));
@@ -106,6 +133,19 @@ namespace gridmap3D{
         for (int i = 0; i < (int)pc.size(); ++i){
             updateNode(pc[i], true);
                         point3d keys_pt = pc[i];
+
+                        //add bounding box 
+                        if(keys_pt(0) > bbx_max || keys_pt(0) < bbx_min)
+                        {
+                            continue;
+                        }else if(keys_pt(1) > bby_max || keys_pt(1) < bby_min)
+                        {
+                            continue;
+                        }else if(keys_pt(2) > bbz_max || keys_pt(2) < bbz_min)
+                        {
+                            continue;
+                        }
+
                         //check if hashmap has value
                         int ind_x = (round((keys_pt(0) + EPSS)/hash_cubesize));
                         int ind_y = (round((keys_pt(1) + EPSS)/hash_cubesize));

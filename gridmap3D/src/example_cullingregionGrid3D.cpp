@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
     }
 
     std::cout << "\nCreating grid\n===========================\n";
-    gridmap3D::CullingRegionGrid3D* grid = new gridmap3D::CullingRegionGrid3D(res);
+    gridmap3D::CullingRegionGrid3D* grid = new gridmap3D::CullingRegionGrid3D(res,0,10,0,10,0,10);
 
     double time_to_update = 0.0;	// sec
     size_t currentScan = 1;
