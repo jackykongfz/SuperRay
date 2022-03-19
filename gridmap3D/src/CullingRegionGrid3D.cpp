@@ -111,9 +111,14 @@ namespace gridmap3D{
                         }
 
                         //check if hashmap has value
-                        int ind_x = (round((keys_pt(0) + EPSS)/hash_cubesize));
-                        int ind_y = (round((keys_pt(1) + EPSS)/hash_cubesize));
-                        int ind_z = (round((keys_pt(2) + EPSS)/hash_cubesize));
+                        int ind_x = (round((keys_pt(0) - (bbx_min - 50) + EPSS)/hash_cubesize));
+                        int ind_y = (round((keys_pt(1) - (bby_min - 50) + EPSS)/hash_cubesize));
+                        int ind_z = (round((keys_pt(2) - (bbz_min - 50) + EPSS)/hash_cubesize));
+
+                        if (ind_x < 0 || ind_y < 0 || ind_z <0)
+                        {
+                            std::cout << "hash value = " << ind_x << ", " << ind_y << ", " << ind_z <<std::endl;
+                        }
 
                         long int box_index = ind_x + ind_y*cube_numx + ind_z*cube_numx*cube_numy;
                         // point_hashmap.insert(pair<int, >(box_index, pt_in));
@@ -123,6 +128,13 @@ namespace gridmap3D{
                         }else{
                             point_hashmap[box_index] = 1;
                             curexpl_voxelcount++;
+
+                            point3d center_pt;
+                            center_pt(0) = ind_x * hash_cubesize + (bbx_min - 50);
+                            center_pt(1) = ind_y * hash_cubesize + (bby_min - 50);
+                            center_pt(2) = ind_z * hash_cubesize + (bbz_min - 50);
+
+                            known_points.push_back(center_pt);
                         }
                     }
                 }
@@ -147,9 +159,14 @@ namespace gridmap3D{
                         }
 
                         //check if hashmap has value
-                        int ind_x = (round((keys_pt(0) + EPSS)/hash_cubesize));
-                        int ind_y = (round((keys_pt(1) + EPSS)/hash_cubesize));
-                        int ind_z = (round((keys_pt(2) + EPSS)/hash_cubesize));
+                        int ind_x = (round((keys_pt(0) - (bbx_min - 50) + EPSS)/hash_cubesize));
+                        int ind_y = (round((keys_pt(1) - (bby_min - 50) + EPSS)/hash_cubesize));
+                        int ind_z = (round((keys_pt(2) - (bbz_min - 50) + EPSS)/hash_cubesize));
+
+                        if (ind_x < 0 || ind_y < 0 || ind_z <0)
+                        {
+                            std::cout << "hash value = " << ind_x << ", " << ind_y << ", " << ind_z <<std::endl;
+                        }
 
                         long int box_index = ind_x + ind_y*cube_numx + ind_z*cube_numx*cube_numy;
                         // point_hashmap.insert(pair<int, >(box_index, pt_in));
@@ -159,6 +176,13 @@ namespace gridmap3D{
                         }else{
                             point_hashmap[box_index] = 1;
                             curexpl_voxelcount++;
+
+                            point3d center_pt;
+                            center_pt(0) = ind_x * hash_cubesize + (bbx_min - 50);
+                            center_pt(1) = ind_y * hash_cubesize + (bby_min - 50);
+                            center_pt(2) = ind_z * hash_cubesize + (bbz_min - 50);
+
+                            known_points.push_back(center_pt);
                         }
         }
 

@@ -34,6 +34,7 @@
 #include <gridmap3D_superray/SuperRayGenerator.h>
 
 #include <tr1/unordered_map>
+#include <vector>
 #include <iostream>
 #include <fstream>
 #include <ctime>
@@ -57,6 +58,13 @@ namespace gridmap3D{
         // CullingRegionGrid3D(std::string _filename);
 
         virtual ~CullingRegionGrid3D(){
+
+            kown_boxfile.open("/home/jackykong/motionplanning/FUEL_ws/src/Exploration_sim/octomap_mapping/octomap_server/data/known_points.txt", std::ios_base::out);
+            for (int i = 0; i<known_points.size(); ++i)
+            {
+                kown_boxfile << known_points[i](0) << "	" << known_points[i](1) << " " << known_points[i](2) << endl;
+            }
+            kown_boxfile.close();
             myfile.close();
         };
 
@@ -162,8 +170,9 @@ namespace gridmap3D{
         int explored_voxelcount = 0;
         int curexpl_voxelcount = 0;
         std::tr1::unordered_map<int, int> point_hashmap;
+        std::vector<point3d> known_points;
         std::string pkg_path;
-        std::ofstream myfile;
+        std::ofstream myfile, kown_boxfile;
         std::chrono::_V2::system_clock::time_point start;
 
         double bbx_min,bbx_max,bby_min,bby_max,bbz_min,bbz_max;
