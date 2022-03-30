@@ -33,6 +33,13 @@
 #include <octomap/octomap.h>
 #include <octomap_superray/SuperRayGenerator.h>
 
+#include <tr1/unordered_map>
+#include <vector>
+#include <iostream>
+#include <fstream>
+#include <ctime>
+#include <chrono>
+
 namespace octomap{
     class CullingRegionOcTree : public OccupancyOcTreeBase<OcTreeNode> {
     public:
@@ -146,6 +153,18 @@ namespace octomap{
         };
         /// static member to ensure static initialization (only once)
         static StaticMemberInitializer cullingregionOcTreeMemberInit;
+
+    // private:
+    //     double m_res;
+    //     int explored_voxelcount = 0;
+    //     int curexpl_voxelcount = 0;
+    //     std::tr1::unordered_map<int, int> point_hashmap;
+    //     std::vector<point3d> known_points;
+    //     std::string pkg_path;
+    //     std::ofstream myfile, kown_boxfile;
+    //     std::chrono::_V2::system_clock::time_point start;
+
+    //     double bbx_min,bbx_max,bby_min,bby_max,bbz_min,bbz_max;
     };
 }
 

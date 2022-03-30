@@ -39,6 +39,8 @@
 #include <fstream>
 #include <ctime>
 #include <chrono>
+# include <string.h>
+
 
 using namespace std;
 // using namespace chrono;
@@ -55,16 +57,20 @@ namespace gridmap3D{
          * @param _filename
          *
          */
-        // CullingRegionGrid3D(std::string _filename);
+        // CullingRegionGrid3D(std::string _filename);virtual 
 
-        virtual ~CullingRegionGrid3D(){
+        ~CullingRegionGrid3D(){
 
-            kown_boxfile.open("/home/jackykong/motionplanning/FUEL_ws/src/Exploration_sim/octomap_mapping/octomap_server/data/known_points.txt", std::ios_base::out);
-            for (int i = 0; i<known_points.size(); ++i)
-            {
-                kown_boxfile << known_points[i](0) << "	" << known_points[i](1) << " " << known_points[i](2) << endl;
-            }
-            kown_boxfile.close();
+            // kown_boxfile.open("/home/jackykong/motionplanning/FUEL_ws/src/Exploration_sim/octomap_mapping/octomap_server/data/known_points.txt", std::ios_base::out);
+            // int count = 0;
+            // for (int i = 0; i<known_points.size(); ++i)
+            // {
+            //     kown_boxfile << known_points[i](0) << "	" << known_points[i](1) << " " << known_points[i](2) << endl;
+            //     count++;
+            // }
+            // kown_boxfile << "end of file" << endl;
+            // std::cout << "kown point write " << count <<std::endl;
+            // kown_boxfile.close();
             myfile.close();
         };
 
@@ -96,6 +102,11 @@ namespace gridmap3D{
 		 * @param threshold threshold for limiting to generate super rays
 		 */
         virtual void insertSuperRayCloudRays(const Pointcloud& scan, const point3d& origin, const int threshold);
+
+        virtual void trans_knownpoints(std::vector<point3d>& known_points_in)
+        {
+            known_points_in = known_points;
+        }
 
     protected:
         /**
@@ -171,11 +182,15 @@ namespace gridmap3D{
         int curexpl_voxelcount = 0;
         std::tr1::unordered_map<int, int> point_hashmap;
         std::vector<point3d> known_points;
+        int known_points_count = 0;
         std::string pkg_path;
         std::ofstream myfile, kown_boxfile;
         std::chrono::_V2::system_clock::time_point start;
 
         double bbx_min,bbx_max,bby_min,bby_max,bbz_min,bbz_max;
+
+        // bool*** gridmap_mat = NULL;
+        // int cube_numx,cube_numy,cube_numz;
     };
 }
 

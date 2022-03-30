@@ -35,6 +35,7 @@ namespace gridmap3D{
         cullingregionGrid3DMemberInit.ensureLinking();
         m_res = in_resolution;
         myfile.open("/home/jackykong/motionplanning/FUEL_ws/src/Exploration_sim/octomap_mapping/octomap_server/data/superray_data.txt", std::ios_base::out);//, std::ios_base::out
+        // kown_boxfile.open("/home/jackykong/motionplanning/FUEL_ws/src/Exploration_sim/octomap_mapping/octomap_server/data/known_points.txt", std::ios_base::out);
         start = std::chrono::system_clock::now();
         bbx_min = min_x;
         bbx_max = max_x;
@@ -42,6 +43,33 @@ namespace gridmap3D{
         bby_max = max_y;
         bbz_min = min_z;
         bbz_max = max_z;
+
+        // cube_numx = (max_x - min_x + 10)/m_res;
+        // cube_numy = (max_y - min_y + 10)/m_res;
+        // cube_numz = (max_z - min_z + 10)/m_res;
+
+        
+        // char ***a, i, j;
+
+        // gridmap_mat = (bool ***)malloc(cube_numz * sizeof(bool **));
+
+        // for(i = 0; i < cube_numz; ++i)
+        // {
+        //     gridmap_mat[i] = (bool **)malloc(cube_numy * sizeof(bool *));
+        // }
+        // for(i = 0; i < cube_numz; ++i)
+        // {
+        // for(j = 0; j < cube_numy; ++j)
+        //     {
+        //         gridmap_mat[i][j] = (bool *)malloc(cube_numx * sizeof(bool));
+        //     }
+        // }
+        // // gridmap_mat = (bool *)malloc(sizeof(bool) * cube_numx * cube_numy * cube_numz);
+        // if(NULL==gridmap_mat)
+        // {
+        //     std::cout<< "Malloc failed!!!!!!!!!!!!" << std::endl;
+        // }
+        // memset(gridmap_mat,0,sizeof(bool) * cube_numx * cube_numy * cube_numz);
     };
 
     /*CullingRegionGrid3D::CullingRegionGrid3D(std::string _filename)
@@ -68,9 +96,7 @@ namespace gridmap3D{
             cube_numx = 500/hash_cubesize;
             cube_numy = 500/hash_cubesize;
             cube_numz = 100/hash_cubesize;
-            curexpl_voxelcount = 0;
-
-            
+            curexpl_voxelcount = 0;            
 
         // Update the occupancies of the map
 #ifdef _OPENMP
@@ -122,6 +148,7 @@ namespace gridmap3D{
 
                         long int box_index = ind_x + ind_y*cube_numx + ind_z*cube_numx*cube_numy;
                         // point_hashmap.insert(pair<int, >(box_index, pt_in));
+                        // std::cout << "Check hash value = " << point_hashmap[box_index] <<std::endl;
                         if(point_hashmap[box_index] > 0)
                         {
                             continue;
@@ -135,7 +162,30 @@ namespace gridmap3D{
                             center_pt(2) = ind_z * hash_cubesize + (bbz_min - 50);
 
                             known_points.push_back(center_pt);
+                            known_points_count++;
+                            // kown_boxfile << center_pt(0) << "	" << center_pt(1) << " " << center_pt(2) << endl;
                         }
+
+
+                        // //change to 3d matrix
+                        // int ind_x = (round((keys_pt(0) - (bbx_min - 5) + EPSS)/m_res));
+                        // int ind_y = (round((keys_pt(1) - (bby_min - 5) + EPSS)/m_res));
+                        // int ind_z = (round((keys_pt(2) - (bbz_min - 5) + EPSS)/m_res));
+                        // int box_index = ind_x + ind_y*cube_numx + ind_z*cube_numx*cube_numy;
+                        // if(gridmap_mat[ind_x][ind_y][ind_z] == 1)
+                        // {
+                        //     continue;
+                        // }else{
+                        //     gridmap_mat[ind_x][ind_y][ind_z] = 1;
+                        //     curexpl_voxelcount++;
+                        
+                        //     point3d center_pt;
+                        //     center_pt(0) = ind_x * m_res + (bbx_min - 5);
+                        //     center_pt(1) = ind_y * m_res + (bby_min - 5);
+                        //     center_pt(2) = ind_z * m_res + (bbz_min - 5);
+
+                        //     known_points.push_back(center_pt);
+                        // }
                     }
                 }
             }
@@ -170,6 +220,7 @@ namespace gridmap3D{
 
                         long int box_index = ind_x + ind_y*cube_numx + ind_z*cube_numx*cube_numy;
                         // point_hashmap.insert(pair<int, >(box_index, pt_in));
+                        // std::cout << "Check hash value = " << point_hashmap[box_index] <<std::endl;
                         if(point_hashmap[box_index] > 0)
                         {
                             continue;
@@ -183,11 +234,35 @@ namespace gridmap3D{
                             center_pt(2) = ind_z * hash_cubesize + (bbz_min - 50);
 
                             known_points.push_back(center_pt);
+                            known_points_count++;
+                            // kown_boxfile << center_pt(0) << "	" << center_pt(1) << " " << center_pt(2) << endl;
+
                         }
+
+                        // //change to 3d matrix
+                        // int ind_x = (round((keys_pt(0) - (bbx_min - 5) + EPSS)/m_res));
+                        // int ind_y = (round((keys_pt(1) - (bby_min - 5) + EPSS)/m_res));
+                        // int ind_z = (round((keys_pt(2) - (bbz_min - 5) + EPSS)/m_res));
+                        // if(gridmap_mat[ind_x][ind_y][ind_z] == 1)
+                        // {
+                        //     continue;
+                        // }else{
+                        //     gridmap_mat[ind_x][ind_y][ind_z] = 1;
+                        //     curexpl_voxelcount++;
+                        
+                        //     point3d center_pt;
+                        //     center_pt(0) = ind_x * m_res + (bbx_min - 5);
+                        //     center_pt(1) = ind_y * m_res + (bby_min - 5);
+                        //     center_pt(2) = ind_z * m_res + (bbz_min - 5);
+
+                        //     known_points.push_back(center_pt);
+                        // }
         }
 
+        // std::cout << "cube_num  = " << cube_numx << ", " << cube_numy << ", " << cube_numz <<std::endl;
+
         explored_voxelcount = explored_voxelcount + curexpl_voxelcount;
-        std::cout << "Explored voxel count = " <<  explored_voxelcount << std::endl;
+        std::cout << "Explored voxel count = " <<  explored_voxelcount  << ", known points count = " <<known_points_count  << " size = "<<known_points.size() << std::endl;
         auto end2 = std::chrono::system_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end2 - start);
         myfile << double(duration.count()) * std::chrono::microseconds::period::num / std::chrono::microseconds::period::den  << " " << curexpl_voxelcount << " " << explored_voxelcount << " " << m_res*m_res*m_res*explored_voxelcount << std::endl;
